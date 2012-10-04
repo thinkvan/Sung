@@ -9,6 +9,7 @@
 #include <vector>
 #include "SEngineEvent.h"
 #include "SPlayer.h"
+#include "SNPC.h"
 
 namespace Sung
 {
@@ -27,7 +28,7 @@ namespace Sung
 		virtual bool IsAccountConnected (const std::string &nickName) = 0;
 		virtual void ChangePlayerState (int ID, bool online) = 0;
 		virtual void ChangeAccountState (int ID, bool online) = 0;
-		virtual int GetAcctIDByName (const std::string &name) = 0;
+		virtual int GetAccountIDByName (const std::string &name) = 0;
 		virtual int GetPersonIDByNickName (const std::string &nickName) = 0;
 		virtual EngineEvent GetCharactersList (int acctID) = 0;
 		virtual void CreateCharacter (int acctID, const std::string &nickName) = 0;
@@ -36,14 +37,10 @@ namespace Sung
 		virtual NPC GetNPC (int ID) = 0;
 		virtual void MajPos (float pPosX, float pPosY, float pPosZ, float pOW, float pOX, float pOY, float pOZ, int pId) = 0;
 		virtual EngineEvent GetPlayerPos (int ID) = 0;
-		virtual EngineEvent GetNpcPos (int ID) = 0;
+		virtual EngineEvent GetNPCPos (int ID) = 0;
 		virtual std::vector<EngineEvent> NPCInfo(int mapID) = 0;
 	};
 
-	class Db {
-	public:
-
-	};
 }
 
 #endif

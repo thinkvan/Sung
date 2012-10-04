@@ -13,8 +13,8 @@
 
 namespace Sung
 {
-	class NetworkConsole;
-	class NetworkMachine;
+	class NetConsole;
+	class NetMachine;
 	class TcpSocket;
 
 	class NetworkAuth 
@@ -28,12 +28,12 @@ namespace Sung
 	class NetEngine : public Engine, public NetDevice
 	{
 	public:
-		NetEngine (Game*, int logPriority, int logOutput);
+		NetEngine (Game *game, int logPriority, int logOutput);
 		~NetEngine();
 
 		void Frame();
-		void ProcessReceivedQueue();
-		void ProcessReceivedEvent (const EngineEvent &e);
+		void ProcessReceivedQueue ();
+		void ProcessReceivedEvent (const EngineEvent &ent);
 
 		TcpSocket *mTcpSocketCons;
 		TcpSocket *mTcpSocket;
@@ -44,25 +44,27 @@ namespace Sung
 		boost::asio::io_service *GetIO() { return mIO; }
 		inline bool IsRunning() { return mIsRunning; }
 
-		void SendEventMulticast (const EngineEvent&);
+		void SendEventMulticast (const EngineEvent &ent);
 
-		int m_portTcpServerConnection, m_portTcpServerCons;
+		int mPortTcpServerConnection;
+		int mPortTcpServerCons;
+
 		virtual void PushReceivedEvent(const EngineEvent&);
-		int GetNextMachineId();
+		int GetNextMachineID();
 		int GetActualMachineId();
-		int GetNextConsoleId();
+		int GetNextConsoleID();
 		int GetActualConsoleId();
 
-		NetworkMachine* getMachineFromId(int);
-		NetworkMachine* getMachineFromPlayerName(const std::string&);
-		NetworkMachine* getMachineFromAddress(const std::string&);
-		bool isAddressRegistered(const std::string&);
+		NetMachine *GetMachineFromID (int);
+		NetMachine *GetMachineFromPlayerName (const std::string&);
+		NetMachine *GetMachineFromAddress (const std::string&);
+		bool IsAddressRegistered (const std::string&);
 
-		std::vector<NetworkMachine*> mMachines;
-		std::vector<NetworkConsole*> mConsoles;
+		std::vector<NetMachine*> mMachines;
+		std::vector<NetConsole*> mConsoles;
 
-		void RemoveMachine (NetworkMachine*);
-		void RemoveConsole (NetworkConsole*);
+		void RemoveMachine (NetMachine*);
+		void RemoveConsole (NetConsole*);
 
 	private:
 		void HandleAcceptTcpCons (const boost::system::error_code&, TcpSocket*);
@@ -79,8 +81,8 @@ namespace Sung
 		boost::array<char, BUFFER_SIZE> mNetworkBuffer;
 		boost::asio::io_service* mIO;
 		bool mIsRunning;
-		int mNextMachineId;
-		int mNextConsoleId;
+		int mNextMachineID;
+		int mNextConsoleID;
 
 		std::map<unsigned int, NetworkAuth>	mAuth;
 		void AcceptAuth(const NetworkAuth &auth);

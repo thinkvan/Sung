@@ -1,3 +1,0 @@
-//
-// SDataBase.cpp
-//

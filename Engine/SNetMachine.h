@@ -25,14 +25,14 @@ public:
 
 	void TcpSend(const EngineEvent&);
 	
-	inline int GetId() const { return m_id; }
+	inline int GetID() const { return mID; }
 	inline boost::asio::io_service *GetIO() { return m_parent->getIO(); }
 	
-	inline int GetAcctId() { return m_acctId; }
-	inline std::string GetAcctName() { return m_acctName; }
+	inline int GetAcctID() { return mAcctId; }
+	inline std::string GetAcctName() { return mAcctName; }
 	
-	int GetPlayerId ();
-	std::string GetNick ();
+	int GetPlayerID ();
+	std::string GetNickName ();
 	
 	void Move (EngineEvent e);
 	void Move (float posX, float posY, float posZ, float pOW, float pOX, float pOY, float pOZ);

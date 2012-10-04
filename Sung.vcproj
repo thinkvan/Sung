@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="E:\boost_1_45_0;&quot;.\ThirdPartiesLibs\log4cpp-1.1\include&quot;;.\Engine;.\Log;.\DataBase;.\Game"
+				AdditionalIncludeDirectories="E:\boost_1_45_0;&quot;.\ThirdPartiesLibs\log4cpp-1.1\include&quot;;.\DataBase;.\Engine;.\Log;.\Game;&quot;.\ThirdPartiesLibs\mongo-cxx-driver-v2.2\src&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -148,6 +148,14 @@
 			Name="Engine"
 			>
 			<File
+				RelativePath=".\Engine\SConfigFileParser.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Engine\SConfigFileParser.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Engine\SConvert.h"
 				>
 			</File>
@@ -161,6 +169,14 @@
 			</File>
 			<File
 				RelativePath=".\Engine\SEngineEvent.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Engine\SNetConsole.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Engine\SNetConsole.h"
 				>
 			</File>
 			<File
@@ -215,6 +231,54 @@
 		<Filter
 			Name="DataBase"
 			>
+			<File
+				RelativePath=".\DataBase\SDataBase.h"
+				>
+			</File>
+			<File
+				RelativePath=".\DataBase\SDataBaseMongo.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\DataBase\SDataBaseMongo.h"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="Game"
+			>
+			<File
+				RelativePath=".\Game\SCharacter.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Game\SCharacter.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Game\SItem.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Game\SItem.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Game\SNPC.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Game\SNPC.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Game\SPlayer.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Game\SPlayer.h"
+				>
+			</File>
 		</Filter>
 	</Files>
 	<Globals>

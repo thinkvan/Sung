@@ -8,156 +8,177 @@
 #include <boost/bind.hpp>
 #include "SNetMachine.h"
 #include "STcpSocket.h"
+using namespace Sung;
 
 //----------------------------------------------------------------------------
-NetworkMachine::NetworkMachine()
+NetMachine::NetMachine()
 {
-	m_tcpSocket = NULL;
-	m_address = "";
-	m_moveCpt = 0;
-	m_deleting = false;
-	
-	networkLog = NULL;
+	mTcpSocket = 0;
+	mAddress = "";
+	mMoveCpt = 0;
+	mDeleting = false;	
+	mLog = 0;
 }
 //----------------------------------------------------------------------------
-NetworkMachine::NetworkMachine(NetworkEngine* pP,
-								TcpSocket *pSo,
-								int pId,
-								int pAcctId,
-								std::string pAcctName,
-								Log *engineLog)
-								 : m_tcpSocket(pSo),
-								 	m_parent(pP),
-								 	m_id(pId),
-								 	m_acctId(pAcctId),
-								 	m_acctName(pAcctName) {
+NetMachine::NetMachine(NetEngine *engine, TcpSocket *sock, int ID, int acctId,
+					   std::string acctName, Log *log)
+					   :
+mTcpSocket(sock),
+mParent(engine),
+mID(ID),
+mAcctID(acctId),
+mAcctName(acctName),
+mLog(log)
+{	
+	mLog->Debug("Network Log correctly linked");
 	
-	networkLog = engineLog;
-		networkLog->debug("Network Log correctly linked");
-	
-	m_player = NULL;
-	m_moveCpt = 0;
-	m_tcpSocket->setParent(this);
-	m_address = m_tcpSocket->getSocket()->remote_endpoint().address().to_string();
-	m_deleting = false;
-	// set up the async reading
-	m_tcpSocket->setBind();
+	mPlayer = 0;
+	mMoveCpt = 0;
+	mDeleting = false;
+	mTcpSocket->SetParent(this);
+	mAddress = mTcpSocket->GetSocket()->remote_endpoint().address().to_string();
+	mTcpSocket->SetBind();
 }
 //----------------------------------------------------------------------------
-/**
- * another constructor
- *\param pP pointor to parent
- *\param pI id for this network machine
- *\param pAcctName name of the account linked with the machine
- */
-NetworkMachine::NetworkMachine(NetworkEngine* pP,
-								int pI,
-								std::string pAcctName,
-								Log *engineLog)
-								 : m_acctName(pAcctName) {
-	
-	networkLog = engineLog;
-		networkLog->debug("Network Log correctly linked");
-	
-	m_parent = pP;
-	m_id = pI;
-	m_moveCpt = 0;
+NetMachine::NetMachine (NetEngine* engine, int ID, std::string acctName,
+						Log *log)
+						:
+mLog(log),
+mParent(engine),
+mID(ID),
+mMoveCpt(0),
+mAcctName(acctName)
+{	
+	mLog->Debug("Network Log correctly linked");	
 }
 //----------------------------------------------------------------------------
-bool NetworkMachine::hasAcctName(const std::string& pN) {
-	if (m_deleting)
+bool NetMachine::HasAcctName(const std::string &name)
+{
+	if (mDeleting)
 		return false;
-	return (pN == m_acctName);
+
+	return (name == mAcctName);
 }
 //----------------------------------------------------------------------------
-bool NetworkMachine::hasNick(const std::string& pN) {
-	return (pN == getNick());
+bool NetMachine::HasNick(const std::string &name)
+{
+	return (name == GetNick());
 }
 //----------------------------------------------------------------------------
-void NetworkMachine::tcpSend(const EngineEvent& pE) {
-	if (!m_tcpSocket->sendEvent(pE)) {
-		if (m_player)
-			networkLog->debug(getAcctName()
+void NetMachine::TcpSend(const EngineEvent &ent)
+{
+	if (!mTcpSocket->SendEvent(ent))
+	{
+		if (mPlayer)
+		{
+			mLog->Debug(GetAcctName()
 							 + " ("
 							 + getNick()
 							 + ") disconnected on "
 							 + m_address);
+		}
 		else
-			networkLog->debug(getAcctName()
+		{
+			mLog->Debug(GetAcctName()
 							 + " disconnected on "
-							 + m_address);
-		m_parent->removeMachine(this);
+							 + mAddress);
+		}
+
+		mParent->RemoveMachine(this);
 	}
 }
 //----------------------------------------------------------------------------
-void NetworkMachine::disconnect(const EngineEvent& pE) {
-	if (m_player)
-		saveMove();
-	tcpSend(pE);
-	m_parent->removeMachine(this);
+void NetMachine::Disconnect(const EngineEvent &ent)
+{
+	if (mPlayer)
+		SaveMove();
+
+	TcpSend(ent);
+
+	mParent->RemoveMachine(this);
 }
 //----------------------------------------------------------------------------
-std::string NetworkMachine::getNick() {
-	if (m_player)
-		return m_player->getNick();
-	else
-		return "";
+std::string NetMachine::GetNickName()
+{
+	if (mPlayer)
+		return mPlayer->GetNickName();
+	
+	return "";
 }
 //----------------------------------------------------------------------------
-int NetworkMachine::getPlayerId() {
-	if (m_player)
-		return m_player->getId();
-	else
-		return 1;
+int NetMachine::GetPlayerID() 
+{
+	if (mPlayer)
+		return mPlayer->GetID();
+
+	return 1;
 }
 //----------------------------------------------------------------------------
-void NetworkMachine::setPlayer(Player pPlayer) {
-	m_player = new Player(pPlayer);
+void NetMachine::SetPlayer (Player player) 
+{
+	mPlayer = new Player(player);
 }
 //----------------------------------------------------------------------------
-void NetworkMachine::move(EngineEvent pE) {
-	if (pE.m_type != EngineEvent::PLAYER_POS && pE.m_type != EngineEvent::PLAYER_PROP)
+void NetMachine::Move (EngineEvent ent) 
+{
+	if (ent.mType != EngineEvent::PLAYER_POS
+		&& ent.mType != EngineEvent::PLAYER_PROP)
 		return;
 
-	m_player->move(pE);
-	m_moveCpt++;
-	if (m_moveCpt >= 50)			//TODO : Much less frequent, test value
-		saveMove();
+	mPlayer->Move(ent);
+	mMoveCpt++;
+
+	if (mMoveCpt >= 50)
+		SaveMove();
 }
 //----------------------------------------------------------------------------
-void NetworkMachine::move(float pPosX, float pPosY, float pPosZ, float pOW, float pOX, float pOY, float pOZ) {
-	m_player->move(pPosX, pPosY, pPosZ, pOW, pOX, pOY, pOZ);
-	m_moveCpt++;
-	if (m_moveCpt >= 50)			//TODO : Much less frequent, test value
-		saveMove();
+void NetMachine::Move(float pPosX, float pPosY, float pPosZ, float pOW, float pOX, float pOY, float pOZ)
+{
+	mPlayer->move(pPosX, pPosY, pPosZ, pOW, pOX, pOY, pOZ);
+
+	mMoveCpt++;
+
+	if (mMoveCpt >= 50)			//TODO : Much less frequent, test value
+		SaveMove();
 }
 //----------------------------------------------------------------------------
-void NetworkMachine::saveMove() {
-	if (m_player) {
-		EngineEvent e;
-		e = m_player->getPos();
-		e.m_iData["PLAYER_ID"] = getPlayerId();
-		m_parent->sendMessageToDb(e);
+void NetMachine::SaveMove()
+{
+	if (mPlayer) 
+	{
+		EngineEvent ent;
+
+		ent = mPlayer->GetPos();
+		ent.miData["PLAYER_ID"] = GetPlayerID();
+
+		mParent->SendMessageToDb(ent);
 	}
-	m_moveCpt = 0;
+
+	mMoveCpt = 0;
 }
 //----------------------------------------------------------------------------
-bool NetworkMachine::isRunning() {
-	return m_parent->isRunning();
+bool NetMachine::IsRunning() 
+{
+	return mParent->IsRunning();
 }
 //----------------------------------------------------------------------------
-void NetworkMachine::pushReceivedEvent(const EngineEvent& pE) {
-	EngineEvent e = pE;
-	e.m_iData["ID"] = m_id;
-	e.m_iData["ACCT_ID"] = m_acctId;
-	if (m_player)
-		e.m_iData["PLAYER_ID"] = getPlayerId();
-	if (e.m_type == EngineEvent::CHAT_EVENT)
-		e.m_sData["PLAYER_NICK"] = getNick();
-	m_parent->pushReceivedEvent(e);
+void NetMachine::PushReceivedEvent(const EngineEvent &ent) 
+{
+	EngineEvent e = ent;
+
+	ent.miData["ID"] = mID;
+	ent.miData["ACCT_ID"] = mAcctID;
+
+	if (mPlayer)
+		e.miData["PLAYER_ID"] = GetPlayerID();
+	if (e.mType == EngineEvent::CHAT_EVENT)
+		e.msData["PLAYER_NICK"] = GetNickName();
+
+	mParent->PushReceivedEvent(e);
 }
 //----------------------------------------------------------------------------
-void NetworkMachine::setDeleting() {
-	m_deleting = true;
+void NetMachine::SetDeleting() 
+{
+	mDeleting = true;
 }
 //----------------------------------------------------------------------------

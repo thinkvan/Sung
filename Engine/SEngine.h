@@ -10,13 +10,14 @@
 #include <string>
 #include <boost/thread/thread.hpp>
 #include <boost/asio.hpp>
+#include "SEngineEvent.h"
 
 #include "engine_event.h"
 
 #include "../Log/log.h"
 
 //class GameEngine;
-class NetworkEngine;
+class NetEngine;
 class DbEngine;
 class EnvironmentEngine;
 class ScheduleEngine;
@@ -28,13 +29,13 @@ public:
 	Engine(Game*, int log_priority, int log_output);
 	virtual ~Engine();
 
-	void pushEvent(const EngineEvent&);
+	void PushEvent(const EngineEvent&);
 	void processQueue();
 
 	virtual void frame() = 0;
 
 	//	void attachGameEngine(GameEngine *pE){m_gameEngine = pE;}
-	void attachNetworkEngine(NetworkEngine *pE){m_networkEngine = pE;}
+	void attachNetworkEngine(NetEngine *pE){m_networkEngine = pE;}
 	void attachDbEngine(DbEngine *pE){m_dbEngine = pE;}
 	void attachEnvironmentEngine(EnvironmentEngine *pE){m_environmentEngine = pE;}
 	void attachScheduleEngine(ScheduleEngine *pE){m_scheduleEngine = pE;}
@@ -49,7 +50,7 @@ public:
 
 	inline Game*					getParent()						{return m_parent;}
 	//	inline GameEngine*				getGameEngine()					{return m_gameEngine;}
-	inline NetworkEngine*			getNetworkEngine()				{return m_networkEngine;}
+	inline NetEngine*			getNetworkEngine()				{return m_networkEngine;}
 	inline DbEngine* 				getDbEngine()					{return m_dbEngine;}
 	inline EnvironmentEngine*		getEnvironmentEngine()			{return m_environmentEngine;}
 	inline ScheduleEngine*			getScheduleEngine()				{return m_scheduleEngine;}
@@ -91,7 +92,7 @@ protected:
 	Log *engineLog;
 
 	//	GameEngine *m_gameEngine;
-	NetworkEngine *m_networkEngine;
+	NetEngine *m_networkEngine;
 	DbEngine *m_dbEngine;
 	EnvironmentEngine *m_environmentEngine;
 	ScheduleEngine *m_scheduleEngine;

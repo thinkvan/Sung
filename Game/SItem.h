@@ -2,6 +2,9 @@
 // SItem.h
 //
 
+#ifndef SITEM_H
+#define SITEM_H
+
 #include <stdio.h>
 #include <string>
 
@@ -46,3 +49,5 @@ namespace Sung
 	};
 
 }
+
+#endif
