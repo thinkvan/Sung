@@ -72,7 +72,7 @@ bool TcpSocket::SendEvent (const EngineEvent &event)
 void TcpSocket::AsyncRead(const boost::system::error_code& error, 
 						  size_t bytesReceived)
 {
-	mNetLog->Debug("TcpSocket::asyncRead("
+	mNetLog->Debug("TcpSocket::AsyncRead("
 					  + stringify<int>(error.value())
 					  + "|"
 					  + error.message()
@@ -83,7 +83,7 @@ void TcpSocket::AsyncRead(const boost::system::error_code& error,
 	if (error.value() != 0)
 		return;
 	
-	// let's deserialize the message
+	// ½âÎöÏûÏ¢
 	if (bytesReceived > 0) 
 	{
 		std::string strData(&mBuffer[0], bytesReceived);
@@ -122,13 +122,15 @@ void TcpSocket::AsyncRead(const boost::system::error_code& error,
 	// an empty packet is received while closing the socket, we must'nt re-open it if it's closing
 	if (mSocket)
 	{
-		if (mSocket->is_open()) {
+		if (mSocket->is_open())
+		{
 			SetBind();
 		}
 	}
 }
 //----------------------------------------------------------------------------
-bool TcpSocket::SetBind() {
+bool TcpSocket::SetBind() 
+{
 	try
 	{
 		mSocket->async_receive(boost::asio::buffer(mBuffer), 
@@ -157,14 +159,13 @@ bool TcpSocket::Connect(boost::asio::ip::tcp::endpoint ep)
 	mSocket->connect(ep, er);
 	boost::asio::socket_base::keep_alive option(true);
 	mSocket->set_option(option);
-	
-	// an error occured, we return 1
+
 	if (er.value() != 0) 
 	{
 		mNetLog->Error("Unable to join host : "
 						  + er.message());
 		delete mSocket;
-		mSocket = NULL;
+		mSocket = 0;
 
 		return false;
 	}
@@ -191,7 +192,8 @@ EngineEvent TcpSocket::SyncReceive()
 	}
 	catch (...) 
 	{
-		mNetLog->Error("Handled unknown exception in TcpSocket::SyncReceive()");
+		mNetLog->Error(
+			"Handled unknown exception in TcpSocket::SyncReceive()");
 	}
 
 	SetBind();

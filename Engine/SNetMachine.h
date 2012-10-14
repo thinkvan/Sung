@@ -23,7 +23,7 @@ public:
 	bool HasAcctName (const std::string&);
 	bool HasNick (const std::string&);
 
-	void TcpSend(const EngineEvent&);
+	void TCPSend(const EngineEvent&);
 	
 	inline int GetID() const { return mID; }
 	inline boost::asio::io_service *GetIO() { return m_parent->getIO(); }

@@ -70,7 +70,7 @@ namespace Sung
 		void HandleAcceptTcpCons (const boost::system::error_code&, TcpSocket*);
 		void HandleAcceptTcp (const boost::system::error_code&, TcpSocket*);
 		void ServerThreadTcpReceiveCons (TcpSocket*);
-		void ServerThreadTcpReceive (TcpSocket*);
+		void ServerThreadTCPReceive (TcpSocket*);
 
 		void GetConfigData();
 

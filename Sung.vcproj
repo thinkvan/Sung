@@ -160,6 +160,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Engine\SDataBaseEngine.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Engine\SDataBaseEngine.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Engine\SEngine.cpp"
 				>
 			</File>
@@ -197,6 +205,22 @@
 			</File>
 			<File
 				RelativePath=".\Engine\SNetMachine.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Engine\SScheduledTask.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Engine\SScheduledTask.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Engine\SScheduleEngine.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Engine\SScheduleEngine.h"
 				>
 			</File>
 			<File
@@ -253,6 +277,14 @@
 			</File>
 			<File
 				RelativePath=".\Game\SCharacter.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Game\SGame.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Game\SGame.h"
 				>
 			</File>
 			<File

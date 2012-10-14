@@ -42,7 +42,7 @@ NetConsole::~NetConsole ()
 	delete mTcpSocket;
 }
 //----------------------------------------------------------------------------
-void NetConsole::TcpSend(const EngineEvent &ent)
+void NetConsole::TCPSend(const EngineEvent &ent)
 {
 	if (!mTcpSocket->SendEvent(ent)) 
 	{
@@ -58,7 +58,7 @@ void NetConsole::TcpSend(const EngineEvent &ent)
 //----------------------------------------------------------------------------
 void NetConsole::Disconnect (const EngineEvent &ent)
 {
-	TcpSend(ent);
+	TCPSend(ent);
 
 	EngineEvent e;
 	e.mType = EngineEvent::REMOVE_CONSOLE;

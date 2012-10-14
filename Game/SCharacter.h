@@ -22,7 +22,7 @@ namespace Sung
 		inline int GetPV() const { return mPV; }
 		inline int GetPVMax() const { return mPVMax; }
 
-		inline int GetMapId() const { return mMapID; }
+		inline int GetMapID() const { return mMapID; }
 		inline float GetPosX() const { return mPosX; }
 		inline float GetPosY() const { return mPosY; }
 		inline float GetPosZ() const { return mPosZ; }
@@ -32,7 +32,7 @@ namespace Sung
 		inline float GetOY() const { return mOY; }
 		inline float GetOZ() const { return mOZ; }
 
-		inline int GetId() const { return mID; }
+		inline int GetID() const { return mID; }
 		inline std::string GetModel() const { return mModel; }
 		inline std::string GetNickName() const { return mNickName; }
 		EngineEvent GetPos() const;

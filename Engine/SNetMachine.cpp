@@ -65,7 +65,7 @@ bool NetMachine::HasNick(const std::string &name)
 	return (name == GetNick());
 }
 //----------------------------------------------------------------------------
-void NetMachine::TcpSend(const EngineEvent &ent)
+void NetMachine::TCPSend(const EngineEvent &ent)
 {
 	if (!mTcpSocket->SendEvent(ent))
 	{
@@ -93,7 +93,7 @@ void NetMachine::Disconnect(const EngineEvent &ent)
 	if (mPlayer)
 		SaveMove();
 
-	TcpSend(ent);
+	TCPSend(ent);
 
 	mParent->RemoveMachine(this);
 }
@@ -151,7 +151,7 @@ void NetMachine::SaveMove()
 		ent = mPlayer->GetPos();
 		ent.miData["PLAYER_ID"] = GetPlayerID();
 
-		mParent->SendMessageToDb(ent);
+		mParent->SendMessageToDataBase(ent);
 	}
 
 	mMoveCpt = 0;

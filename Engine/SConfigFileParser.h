@@ -17,20 +17,18 @@ namespace Sung
 	class ConfigFileParser
 	{
 	protected:
-		std::string myDelimiter;  // separator between key and value
-		std::string myComment;    // separator between value and comments
-		std::string mySentry;     // optional std::string to signal end of file
-		std::map<std::string,std::string> myContents;  // extracted keys and values
+		std::string myDelimiter;
+		std::string myComment;
+		std::string mySentry;
+		std::map<std::string,std::string> myContents;
 
 		typedef std::map<std::string,std::string>::iterator mapi;
 		typedef std::map<std::string,std::string>::const_iterator mapci;
 
 		// Methods
 	public:
-		ConfigFileParser(std::string filename,
-			std::string delimiter = "=",
-			std::string comment = "#",
-			std::string sentry = "EndConfigFile");
+		ConfigFileParser(std::string filename, std::string delimiter = "=",
+			std::string comment = "#", std::string sentry = "EndConfigFile");
 		ConfigFileParser();
 
 		// Search for key and read value or optional default value
@@ -78,71 +76,61 @@ namespace Sung
 					: key(key_) {} };
 	};
 
-
-	/* static */
 	template<class T>
-	std::string ConfigFileParser::T_as_string(const T& t) {
-		// Convert from a T to a std::string
-		// Type T must support << operator
+	std::string ConfigFileParser::T_as_string(const T& t) 
+	{
 		std::ostringstream ost;
 		ost << t;
 		return ost.str();
 	}
 
-
-	/* static */
 	template<class T>
-	T ConfigFileParser::string_as_T(const std::string& s) {
-		// Convert from a std::string to a T
-		// Type T must support >> operator
+	T ConfigFileParser::string_as_T(const std::string& s) 
+	{
 		T t;
 		std::istringstream ist(s);
 		ist >> t;
 		return t;
 	}
 
-
-	/* static */
 	template<>
-	inline std::string ConfigFileParser::string_as_T<std::string>(const std::string& s) {
-		// Convert from a std::string to a std::string
-		// In other words, do nothing
+	inline std::string ConfigFileParser::string_as_T<std::string>(const std::string& s) 
+	{
 		return s;
 	}
 
-
-	/* static */
 	template<>
-	inline bool ConfigFileParser::string_as_T<bool>(const std::string& s) {
-		// Convert from a std::string to a bool
-		// Interpret "false", "F", "no", "n", "0" as false
-		// Interpret "true", "T", "yes", "y", "1", "-1", or anything else as true
+	inline bool ConfigFileParser::string_as_T<bool>(const std::string& s) 
+	{
 		bool b = true;
 		std::string sup = s;
+
 		for( std::string::iterator p = sup.begin(); p != sup.end(); ++p )
 			*p = toupper(*p);  // make std::string all caps
+
 		if (sup==std::string("FALSE") || sup==std::string("F") ||
 			sup==std::string("NO") || sup==std::string("N") ||
 			sup==std::string("0") || sup==std::string("NONE"))
 			b = false;
+
 		return b;
 	}
 
 
 	template<class T>
-	T ConfigFileParser::read(const std::string& key) const {
-		// Read the value corresponding to key
+	T ConfigFileParser::read(const std::string& key) const 
+	{
 		mapci p = myContents.find(key);
 		if (p == myContents.end())
 			throw key_not_found(key);
+		
 		return string_as_T<T>(p->second);
 	}
 
 
 	template<class T>
-	T ConfigFileParser::read(const std::string& key, const T& value) const {
-		// Return the value corresponding to key or given default value
-		// if key is not found
+	T ConfigFileParser::read(const std::string& key, const T& value) const
+	{
 		mapci p = myContents.find(key);
 		if (p == myContents.end())
 			return value;
@@ -151,36 +139,34 @@ namespace Sung
 
 
 	template<class T>
-	bool ConfigFileParser::readInto(T& var, const std::string& key) const {
-		// Get the value corresponding to key and store in var
-		// Return true if key is found
-		// Otherwise leave var untouched
+	bool ConfigFileParser::readInto(T& var, const std::string& key) const
+	{
 		mapci p = myContents.find(key);
 		bool found = (p != myContents.end());
 		if (found)
 			var = string_as_T<T>(p->second);
+
 		return found;
 	}
 
 
 	template<class T>
-	bool ConfigFileParser::readInto(T& var, const std::string& key, const T& value) const {
-		// Get the value corresponding to key and store in var
-		// Return true if key is found
-		// Otherwise set var to given default
+	bool ConfigFileParser::readInto(T& var, const std::string& key, const T& value) const 
+	{
 		mapci p = myContents.find(key);
 		bool found = (p != myContents.end());
 		if (found)
 			var = string_as_T<T>(p->second);
 		else
 			var = value;
+
 		return found;
 	}
 
 
 	template<class T>
-	void ConfigFileParser::add(std::string key, const T& value) {
-		// Add a key with given value
+	void ConfigFileParser::add(std::string key, const T& value)
+	{
 		std::string v = T_as_string(value);
 		trim(key);
 		trim(v);

@@ -27,10 +27,10 @@ namespace Sung
 		NetConsole (NetEngine *engine, TcpSocket *sock, int ID, Log *log);
 		~NetConsole ();
 
-		void TcpSend (const EngineEvent &ent);
+		void TCPSend (const EngineEvent &ent);
 
 		boost::asio::io_service* GetIO () { return mParent->GetIO(); }
-		int GetId() { return mID; }
+		int GetID() { return mID; }
 
 		void Disconnect (const EngineEvent &ent);
 		bool IsRunning ();

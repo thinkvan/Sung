@@ -121,7 +121,7 @@ void NetEngine::ProcessEnvironmentInfo(const EngineEvent &ent)
 
 	if (m)
 	{
-		m->TcpSend(ent);
+		m->TCPSend(ent);
 	}
 }
 //----------------------------------------------------------------------------
@@ -137,7 +137,7 @@ void NetEngine::ProcessNpcProp (const EngineEvent &ent)
 	NetMachine *m = GetMachineFromID(id);
 
 	if (m != 0)
-		m->TcpSend(ent);
+		m->TCPSend(ent);
 }
 //----------------------------------------------------------------------------
 void NetEngine::ProcessPlayerProp(const EngineEvent &ent)
@@ -152,7 +152,7 @@ void NetEngine::ProcessPlayerProp(const EngineEvent &ent)
 	NetMachine *m = GetMachineFromID(id);
 	
 	if (m != 0)
-		m->TcpSend(ent);
+		m->TCPSend(ent);
 }
 //----------------------------------------------------------------------------
 void NetEngine::ProcessRemoveMachine(const EngineEvent &ent)
@@ -172,7 +172,7 @@ void NetEngine::ProcessRemoveMachine(const EngineEvent &ent)
 			EngineEvent e;
 			e.mType = EngineEvent::REMOVE_MACHINE;
 			e.miData["ACCT_ID"] = mMachines.at(i)->GetAcctId();
-			SendMessageToDb(e);
+			SendMessageToDataBase(e);
 
 			mMachines.erase(mMachines.begin() + i);
 
@@ -192,7 +192,7 @@ void NetEngine::ProcessCharactersList(const EngineEvent &ent)
 	NetMachine *m = GetMachineFromID(id);
 
 	if (m != 0)
-		m->TcpSend(ent);
+		m->TCPSend(ent);
 }
 //----------------------------------------------------------------------------
 void NetEngine::ProcessAuth(const EngineEvent &ent)
@@ -317,11 +317,11 @@ void NetEngine::HandleAcceptTcp(const boost::system::error_code &error,
 	socket->GetSocket()->set_option(option);
 
 	// start the thread
-	boost::thread t(boost::bind(&NetEngine::ServerThreadTcpReceive, this,
+	boost::thread t(boost::bind(&NetEngine::ServerThreadTCPReceive, this,
 		socket));
 
 	// 重新开始接受一个新的socket
-	mLog->info("Rearming the accept...");
+	mLog->Info("Rearming the accept...");
 	mTcpSocket = new TcpSocket(this, mLog);
 
 	boost::system::error_code err;
@@ -340,15 +340,13 @@ void NetEngine::ServerThreadTcpReceiveCons (TcpSocket *socket)
 	mConsoles.push_back(n);
 
 	// 从现在开始，所有的“沟通”通过NetConsole，不是通过socket
-	n->TcpSend(e);
+	n->TCPSend(e);
 }
 //----------------------------------------------------------------------------
-void NetEngine::ServerThreadTcpReceive (TcpSocket *socket)
+void NetEngine::ServerThreadTCPReceive (TcpSocket *socket)
 {
-	// let's receive and deserialize the auth message
 	EngineEvent ne = socket->SyncReceive();
 
-	// did we receive a NICK message ?
 	if (ne.mType != EngineEvent::MSG_NICK)
 	{
 		EngineEvent e;
@@ -396,7 +394,7 @@ void NetEngine::ServerThreadTcpReceive (TcpSocket *socket)
 	eauth.miData["ID"] = id;
 	eauth.msData["ACCT_NAME"] = auth.mAcctName;
 	eauth.msData["PASS"] = ne.msData["PASS"];
-	SendMessageToDb(eauth);
+	SendMessageToDataBase(eauth);
 /*
 	// wrong password
 	// /!\ don't call directly another engine function, use engine events
@@ -443,7 +441,7 @@ void NetEngine::AcceptAuth (const NetworkAuth &auth)
 	EngineEvent e;
 	e.mType = EngineEvent::WELCOME;
 	e.miData["ACCT_ID"] = auth.mAcctID;
-	SendMessageToDb(e);
+	SendMessageToDataBase(e);
 
 	mMachines.push_back(n);
 
@@ -451,7 +449,7 @@ void NetEngine::AcceptAuth (const NetworkAuth &auth)
 	EngineEvent accept;
 	accept.mType = EngineEvent::MSG_NICK;
 	accept.miData["ACCEPTED"] = 1;
-	n->TcpSend(accept);
+	n->TCPSend(accept);
 }
 //----------------------------------------------------------------------------
 void NetEngine::RejectAuth(const NetworkAuth &auth) 
@@ -486,13 +484,12 @@ void NetEngine::DisconnectAcct(const std::string& acctName)
 		machine->Disconnect(deco);
 	}
 
-	// setting account offline in database
 	if (acctId > -1)
 	{
 		EngineEvent deco;
 		deco.mType = EngineEvent::REMOVE_MACHINE;
 		deco.miData["ACCT_ID"] = acctId;
-		SendMessageToDb(deco);
+		SendMessageToDataBase(deco);
 	}
 }
 //----------------------------------------------------------------------------
@@ -601,7 +598,7 @@ void NetEngine::ProcessReceivedCharactersList (const EngineEvent &ent)
 	if (it->second != 1)
 		return;
 
-	SendMessageToDb(ent);
+	SendMessageToDataBase(ent);
 }
 //----------------------------------------------------------------------------
 void NetEngine::ProcessReceivedDelPlayer(const EngineEvent &ent) 
@@ -622,12 +619,12 @@ void NetEngine::ProcessReceivedDelPlayer(const EngineEvent &ent)
 	{
 		eDelPlayer.miData["PLAYER_ID"] = m->GetPlayerID();
 
-		SendMessageToDb(eDelPlayer);
+		SendMessageToDataBase(eDelPlayer);
 
 		for (unsigned int i = 0; i < mMachines.size(); i++)
 		{
 			if (!mMachines.at(i)->HasNick(playerNick))
-				mMachines.at(i)->TcpSend(eDelPlayer);
+				mMachines.at(i)->TCPSend(eDelPlayer);
 		}
 	}
 }
@@ -656,19 +653,19 @@ void NetEngine::ProcessReceivedPlayerPos(const EngineEvent &ent)
 		for (unsigned int i = 0; i < mMachines.size(); i++)
 		{
 			if (mMachines.at(i)->GetID() != id)
-				mMachines.at(i)->TcpSend(e);
+				mMachines.at(i)->TCPSend(e);
 		}
 	}
 }
 //----------------------------------------------------------------------------
 void NetEngine::ProcessReceivedCreateCharacter(const EngineEvent &ent)
 {
-	SendMessageToDb(ent);
+	SendMessageToDataBase(ent);
 }
 //----------------------------------------------------------------------------
 void NetEngine::ProcessReceivedDeleteCharacter(const EngineEvent &ent) 
 {
-	SendMessageToDb(pE);
+	SendMessageToDataBase(ent);
 }
 //----------------------------------------------------------------------------
 void NetEngine::ProcessReceivedChatEvent (const EngineEvent &ent)
@@ -686,7 +683,7 @@ void NetEngine::ProcessReceivedChatEvent (const EngineEvent &ent)
 
 	for (unsigned int i = 0; i < mMachines.size(); i++)
 	{
-		mMachines.at(i)->TcpSend(ent);
+		mMachines.at(i)->TCPSend(ent);
 	}
 }
 //----------------------------------------------------------------------------
@@ -706,7 +703,7 @@ void NetEngine::ProcessReceivedPing (const EngineEvent &ent)
 			{
 				EngineEvent e = ent;
 				e.miData["STATE"] = 1;
-				mMachines.at(i)->tcpSend(e);
+				mMachines.at(i)->TCPSend(e);
 
 				return;
 			}
@@ -715,12 +712,12 @@ void NetEngine::ProcessReceivedPing (const EngineEvent &ent)
 //----------------------------------------------------------------------------
 void NetEngine::ProcessReceivedPlayerProp(const EngineEvent &ent)
 {
-	SendMessageToDb(ent);
+	SendMessageToDataBase(ent);
 }
 //----------------------------------------------------------------------------
 void NetEngine::ProcessReceivedNpcProp(const EngineEvent &ent) 
 {
-	SendMessageToDb(ent);
+	SendMessageToDataBase(ent);
 }
 //----------------------------------------------------------------------------
 void NetEngine::ProcessReceivedEvent(const EngineEvent &ent) 
@@ -779,8 +776,8 @@ void NetEngine::RemoveMachine (NetMachine* machine)
 
 			EngineEvent e;
 			e.mType = EngineEvent::REMOVE_MACHINE;
-			e.miData["ACCT_ID"] = machine->GetAcctId();
-			SendMessageToDb(e);
+			e.miData["ACCT_ID"] = machine->GetAcctID();
+			SendMessageToDataBase(e);
 
 			mMachines.erase(it);
 
